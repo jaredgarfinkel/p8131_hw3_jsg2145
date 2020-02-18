@@ -89,7 +89,7 @@ cuc_73 = tibble(
   mutate(extract = "cuc",
          seed = "73")
 
-df_orobanche = union_all(bean_75, cuc_75) %>% 
+df_o = union_all(bean_75, cuc_75) %>% 
   union_all(bean_73) %>% 
   union_all(cuc_73) %>% 
   mutate(y_m = m - y,
@@ -100,7 +100,7 @@ df_orobanche = union_all(bean_75, cuc_75) %>%
                        "75" = 0,
                        "73" = 1))
 
-fit_o = glm(cbind(y, y_m) ~ seed + extract, family = binomial(link = 'logit'), df_orobanche)
+fit_o = glm(cbind(y, y_m) ~ seed + extract, family = binomial(link = 'logit'), df_o)
 
 summary(fit_o)
 ```
