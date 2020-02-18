@@ -131,23 +131,23 @@ G.stat
 phi = G.stat/(21 - 2)
 phi
 
-# estimate with the deviance
+# Estimate phi with the deviance
 
 dev_o/(21 - 2)
 ```
 
 ```{r}
 res_o = residuals(fit_o, type = "pearson")
-plot(qnorm((21+1:21+0.5)/(2*21+1.125)),sort(abs(res_o)),xlab='Expected Half-Normal Order Stats',ylab='Ordered Abs Pearson Residuals')
-abline(a=0,b=1)
-abline(a=0,b=sqrt(phi),lty=2)
+plot(qnorm((21 + 1:21 + 0.5) / (2 * 21 + 1.125)), sort(abs(res_o)), xlab = 'Expected Half-Normal Order Stats',ylab = 'Ordered Abs Pearson Residuals')
+abline(a = 0, b = 1)
+abline(a = 0 , b = sqrt(phi), lty = 2)
 ```
 
 ```{r}
 summary(fit_o, dispersion=phi)
 ```
 
-The type of seed is no longer significant in the model.
+The type of seed is no longer significant in the model. 
 
 The reason for the over dispersion may be correlation within each subject and treatment group.
 
