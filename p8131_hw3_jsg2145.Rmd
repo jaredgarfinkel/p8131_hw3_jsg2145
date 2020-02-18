@@ -1,0 +1,49 @@
+---
+title: "p8131_hw3_jsg2145"
+author: "Jared Garfinkel"
+date: "2/17/2020"
+output: github_document
+---
+
+```{r setup, include=FALSE}
+library(tidyverse)
+library(viridis)
+knitr::opts_chunk$set(
+	echo = TRUE,
+	warning = FALSE,
+	fig.width = 8, 
+  fig.height = 6,
+  out.width = "90%"
+)
+options(
+  ggplot2.continuous.colour = "viridis",
+  ggplot2.continuous.fill = "viridis"
+)
+scale_colour_discrete = scale_colour_viridis_d
+scale_fill_discrete = scale_fill_viridis_d
+theme_set(theme_minimal() + theme(legend.position = "bottom"))
+```
+
+```{r}
+case_df = tibble(
+  age = seq(from = 25, to = 75, by = 10),
+  unexposed = c(0, 5, 21, 34, 36, 8),
+  exposed = c(1, 4, 25, 42, 19, 5)
+) %>% 
+  mutate(case = 1)
+
+control_df = tibble(
+  age = seq(from = 25, to = 75, by = 10),
+  unexposed = c(106, 164, 138, 139, 88, 31),
+  exposed = c(9, 26, 29, 27, 18, 0)
+) %>% 
+  mutate(case = 0)
+
+df = union(case_df, control_df)
+```
+
+```{r}
+
+```
+
+
