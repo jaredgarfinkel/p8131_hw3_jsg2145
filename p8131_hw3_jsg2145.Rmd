@@ -8,6 +8,7 @@ output: github_document
 ```{r setup, include=FALSE}
 library(tidyverse)
 library(viridis)
+library(ResourceSelection)
 knitr::opts_chunk$set(
 	echo = TRUE,
 	warning = FALSE,
@@ -24,6 +25,8 @@ scale_fill_discrete = scale_fill_viridis_d
 theme_set(theme_minimal() + theme(legend.position = "bottom"))
 ```
 
+## Problem 1
+
 ```{r}
 case_df = tibble(
   age = seq(from = 25, to = 75, by = 10),
@@ -39,11 +42,112 @@ control_df = tibble(
 ) %>% 
   mutate(case = 0)
 
-df = union(case_df, control_df)
+df = union(case_df, control_df) %>% 
+  pivot_longer(cols = c(exposed, unexposed), names_to = "status") %>% 
+  mutate(status = recode(status,
+                         exposed = 1,
+                         unexposed = 0))
 ```
 
 ```{r}
+fit = glm(cbind(value*(case == 1), value*(case == 0)) ~ status + age, family = binomial(link = 'logit'), data = df)
 
+summary(fit)
+
+fit = fit %>% 
+  broom::tidy()
 ```
 
+The difference in log odds of developing cancer is `r fit %>% filter(pull(fit, term) == "status") %>% pull(estimate) %>% round(digits = 2)` for those with the exposure (>80 grams of alcohol per day) compared to those without, holding age constant.
+
+The log odds ratio of developing cancer is `r fit %>% filter(pull(fit, term) == "age") %>% pull(estimate) %>% round(digits = 2)` for each 1 unit increase in age, holding exposure constant.
+
+## Problem 2
+
+```{r}
+bean_75 = tibble(
+  y = c(10, 23, 23, 26, 17),
+  m = c(39, 62, 81, 51, 39)) %>% 
+  mutate(extract = "bean",
+         seed = "75")
+
+cuc_75 = tibble(
+  y = c(5, 53, 55, 32, 46, 10),
+  m = c(6, 74, 72, 51, 79, 13)) %>% 
+  mutate(extract = "cuc",
+         seed = "75")
+
+bean_73 = tibble(
+  y = c(8, 10, 8, 23, 0),
+  m = c(16, 30, 28, 45, 4)) %>% 
+  mutate(extract = "bean",
+         seed = "73")
+
+cuc_73 = tibble(
+  y = c(3, 22, 15, 32, 3),
+  m = c(12, 41, 30, 51, 7)) %>% 
+  mutate(extract = "cuc",
+         seed = "73")
+
+df_orobanche = union_all(bean_75, cuc_75) %>% 
+  union_all(bean_73) %>% 
+  union_all(cuc_73) %>% 
+  mutate(y_m = m - y,
+         extract = recode(extract,
+                          "bean" = 0,
+                          "cuc" = 1),
+         seed = recode(seed,
+                       "75" = 0,
+                       "73" = 1))
+
+fit_o = glm(cbind(y, y_m) ~ seed + extract, family = binomial(link = 'logit'), df_orobanche)
+
+summary(fit_o)
+```
+
+The log odds ratio for germination is reduced by `r broom::tidy(fit_o) %>% filter(term == "seed") %>% pull(estimate) %>% round(digits = 2)` for species Orobanche aegyptiaca 73 compared to Orobanche aegyptiaca 75, holding the extract media type constant.
+
+The log odds ratio for germination is increased by `r broom::tidy(fit_o) %>% filter(term == "extract") %>% pull(estimate) %>% round(digits = 2)` for cucumber extract media compared to bean extract media, holding the species constant.
+
+There is a log odds of `r broom::tidy(fit_o) %>% filter(term == "(Intercept)") %>% pull(estimate) %>% round(digits = 2)` for plants that are species Orobanche aegyptiaca 75 grown in bean extract media.
+
+```{r}
+# Evaluate dispersion with Pearson Chi-Squared Residual
+
+dev_o = deviance(fit_o)
+
+pval_x2 = 1 - pchisq(dev_o, 19)
+pval_x2
+```
+
+A low p-value (<0.05) indicates that there is over dispersion
+
+```{r}
+# Estimate phi with the G statistic
+
+G.stat = sum(residuals(fit_o, type = "pearson")^2)
+G.stat
+
+phi = G.stat/(21 - 2)
+phi
+
+# estimate with the deviance
+
+dev_o/(21 - 2)
+```
+
+```{r}
+res_o = residuals(fit_o, type = "pearson")
+plot(qnorm((21+1:21+0.5)/(2*21+1.125)),sort(abs(res_o)),xlab='Expected Half-Normal Order Stats',ylab='Ordered Abs Pearson Residuals')
+abline(a=0,b=1)
+abline(a=0,b=sqrt(phi),lty=2)
+```
+
+```{r}
+summary(fit_o, dispersion=phi)
+```
+
+The type of seed is no longer significant in the model.
+
+The reason for the over dispersion may be correlation within each subject and treatment group.
 
