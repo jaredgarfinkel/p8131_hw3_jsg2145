@@ -112,12 +112,12 @@ The log odds ratio for germination is increased by `r broom::tidy(fit_o) %>% fil
 There is a log odds of `r broom::tidy(fit_o) %>% filter(term == "(Intercept)") %>% pull(estimate) %>% round(digits = 2)` for plants that are species Orobanche aegyptiaca 75 grown in bean extract media.
 
 ```{r}
-# Evaluate dispersion with Pearson Chi-Squared Residual
+# Evaluate dispersion with deviance
 
 dev_o = deviance(fit_o)
 
-pval_x2 = 1 - pchisq(dev_o, 19)
-pval_x2
+pval = 1 - pchisq(dev_o, 19)
+pval
 ```
 
 A low p-value (<0.05) indicates that there is over dispersion
