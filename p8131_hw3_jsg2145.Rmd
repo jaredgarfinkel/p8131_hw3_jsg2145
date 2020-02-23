@@ -2,7 +2,7 @@
 title: "p8131_hw3_jsg2145"
 author: "Jared Garfinkel"
 date: "2/17/2020"
-output: github_document
+output: pdf_document
 ---
 
 ```{r setup, include=FALSE}
@@ -144,10 +144,10 @@ abline(a = 0 , b = sqrt(phi), lty = 2)
 ```
 
 ```{r}
-summary(fit_o, dispersion=phi)
+summary(fit_o, dispersion = phi)
 ```
 
-The type of seed is no longer significant in the model. 
+The type of seed is no longer significant in the model when a dispersion factor is included.
 
-The reason for the over dispersion may be correlation within each subject and treatment group.
+The reason for the over dispersion may be correlation within each treatment group.
 
