@@ -116,7 +116,7 @@ There is a log odds of `r broom::tidy(fit_o) %>% filter(term == "(Intercept)") %
 
 dev_o = deviance(fit_o)
 
-pval = 1 - pchisq(dev_o, 19)
+pval = 1 - pchisq(dev_o, 18)
 pval
 ```
 
@@ -150,4 +150,3 @@ summary(fit_o, dispersion = phi)
 The type of seed is no longer significant in the model when a dispersion factor is included.
 
 The reason for the over dispersion may be correlation within each treatment group.
-
