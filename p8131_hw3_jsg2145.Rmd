@@ -128,12 +128,12 @@ A low p-value (<0.05) indicates that there is over dispersion
 G.stat = sum(residuals(fit_o, type = "pearson")^2)
 G.stat
 
-phi = G.stat/(21 - 2)
+phi = G.stat/(21 - 3)
 phi
 
 # Estimate phi with the deviance
 
-dev_o/(21 - 2)
+dev_o/(21 - 3)
 ```
 
 ```{r}
